@@ -17,7 +17,7 @@ template ProcessDeactivateMessages(
     // voteOptionTreeDepth: depth of the vote option tree
     // batchSize: number of messages processed at one time
 
-    assert(stateTreeDepth > 0);
+    assert(stateTreeDepth > 0);  ///// SAME SUGGESTION AS in AddNewKey
     assert(batchSize > 0);
 
     var TREE_ARITY = 5;
@@ -72,6 +72,11 @@ template ProcessDeactivateMessages(
     signal input newActiveState[batchSize];
 
     signal input deactivateIndex0;
+    ////////////// SUGGESTED FIX / REPLACE //////////////////////////
+    component deactivateIndexCheck = LessEqThan(252);
+    deactivateIndexCheck.in[0] <== deactivateIndex0;
+    deactivateIndexCheck.in[1] <== MAX_INDEX - batchSize;
+    deactivateIndexCheck.out === 1;
 
     // The signup state root
     signal input currentStateRoot;
@@ -127,6 +132,8 @@ template ProcessDeactivateMessages(
         messageHashers[i].encPubKey[1] <== encPubKeys[i][1];
         messageHashers[i].prevHash <== msgHashChain[i];
 
+        //////////// SUGGESTED FIX / REPLACE //////////////
+        // Add early returns for empty messages. Processing empty messages could lead to state inconsistencies and unnecessary gas costs.
         isEmptyMsg[i] = IsZero();
         isEmptyMsg[i].in <== msgs[i][0];
 
@@ -312,6 +319,8 @@ template ProcessOne(stateTreeDepth) {
 
     // 1.2
     component decryptCurrentIsActive = ElGamalDecrypt();
+    //////////////// SUGGESTED / FIX ////////////////////
+    // REDUNDANCY 
     decryptCurrentIsActive.c1[0] <== stateLeaf[STATE_LEAF_C1_0_IDX];
     decryptCurrentIsActive.c1[1] <== stateLeaf[STATE_LEAF_C1_1_IDX];
     decryptCurrentIsActive.c2[0] <== stateLeaf[STATE_LEAF_C2_0_IDX];

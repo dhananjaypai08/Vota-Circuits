@@ -150,12 +150,19 @@ template TallyVotes(
     //  ----------------------------------------------------------------------- 
     // Tally the new results
     var MAX_VOTES = 10 ** 24;
-    component newResults[numVoteOptions];
+    ///////////// SUGGESTED FIX / REPLACE ////////////////////
+    component voteRangeCheck[batchSize][numVoteOptions];
     for (var i = 0; i < numVoteOptions; i ++) {
         newResults[i] = CalculateTotal(batchSize + 1);
         newResults[i].nums[batchSize] <== currentResults[i] * iz.out;
         for (var j = 0; j < batchSize; j ++) {
             newResults[i].nums[j] <== votes[j][i] * (votes[j][i] + MAX_VOTES);
+
+            //////////////// SUGGESTED FIX / REPLACE ////////////////////
+            voteRangeCheck[i][j] = LessThan(32);
+            voteRangeCheck[i][j].in[0] <== votes[i][j];
+            voteRangeCheck[i][j].in[1] <== MAX_VOTES;
+            voteRangeCheck[i][j].out === 1;
         }
     }
 

@@ -121,6 +121,12 @@ template ProcessMessages(
     currentStateCommitmentHasher.right <== currentStateSalt;
     currentStateCommitmentHasher.hash === currentStateCommitment;
 
+    ///////////////////// SUGGESTED FIX / REPLACE 
+    component stateCommitmentHasher = SecureCommitment(); // PEDERSON COMMITMENTS
+    stateCommitmentHasher.value <== currentStateRoot;
+    stateCommitmentHasher.salt <== currentStateSalt;
+    stateCommitmentHasher.padding <== LENGTH_PADDING;
+
     // Verify deactivateCommitment
     component deactivateCommitmentHasher = HashLeftRight();
     deactivateCommitmentHasher.left <== activeStateRoot;
@@ -444,6 +450,12 @@ template ProcessOne(stateTreeDepth, voteOptionTreeDepth) {
 
     component slvoRootIsZero = IsZero();
     slvoRootIsZero.in <== stateLeaf[STATE_LEAF_VO_ROOT_IDX];
+    /////////////// SUGGESTED FIX / REPLACE ///////////////////
+    const ZERO_VALUE = 0;
+    component slvoRootIsZero = IsEqual();
+    slvoRootIsZero.in[0] <== stateLeaf[STATE_LEAF_VO_ROOT_IDX];
+    slvoRootIsZero.in[1] <== ZERO_VALUE;
+    
     component voRootMux = Mux1();
     voRootMux.s <== slvoRootIsZero.out;
     voRootMux.c[0] <== stateLeaf[STATE_LEAF_VO_ROOT_IDX];

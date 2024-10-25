@@ -18,6 +18,10 @@ template AddNewKey(
 
     assert(stateTreeDepth > 0);
 
+    ////////// SUGGESTED FIX/ REPLACE ////////
+    assert(stateTreeDepth <= 32);
+    assert(stateTreeDepth > 0);
+
     var TREE_ARITY = 5;
 
     signal input inputHash;
@@ -50,6 +54,10 @@ template AddNewKey(
     component nullifierHasher = HashLeftRight(); 
     nullifierHasher.left <== oldPrivateKey;
     nullifierHasher.right <== 1444992409218394441042; // 'NULLIFIER'
+    ////////////// SUGGESTED REPLACE / FIX /////////////////
+    signal input nullifierSalt;
+    nullifierHasher.right <== nullifierSalt;
+    
     nullifierHasher.hash === nullifier;
 
     // 2.
@@ -97,6 +105,13 @@ template AddNewKey(
 
     rerandomize.d1[0] === d1[0];
     rerandomize.d2[0] === d2[0];
+
+    ////// Suggested Fix/ Replace  //////
+    rerandomize.d1[0] === d1[0];
+    rerandomize.d2[0] === d2[0];
+    rerandomize.d1[1] === d1[1];
+    rerandomize.d2[1] === d2[1];
+
 
     // Verify "public" inputs and assign unpacked values
     component inputHasher = AddNewKeyInputHasher();
